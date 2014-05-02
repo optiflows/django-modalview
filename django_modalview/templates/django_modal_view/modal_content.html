@@ -1,0 +1,49 @@
+{% load i18n %}
+<div class="modal-header">
+	{% block modal-title %}
+		<div class="modal_icon {% block icon-modal %} {% if icon %} {{ icon }} {% endif %}{% endblock %}"></div>
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			&times;
+		</button>
+		<h2>
+			{% if title %}
+				{{ title|safe }}
+			{% endif %}
+		</h2>
+	{% endblock %}
+</div>
+<div class="modal-body ">
+	{% block modal-body %}
+		<div class="modal-description">
+			{% block modal-description %}
+				{% if description %}
+					{{ description|safe }}
+				{% endif %}
+			{% endblock %}
+		</div>
+		<br />
+		<div class="modal-result">
+			{% block modal-result %}
+				{% if response %}
+			        <div class='alert alert-{{response.result}}'>
+			                {{ response.text|safe }}
+			        </div>
+				{% endif %}
+			{% endblock %}
+		</div>
+	{% endblock %}
+</div>
+<div class="modal-footer">
+	{% block modal-button %}
+		{% if util_button.display %}
+			<a href='{{util_button.url}}'class="util_runner btn btn-{{util_button.type}}"data-loading-text="Loading..."
+			>{% trans util_button.value %}</a>
+		{% endif %}
+		{% if submit_button.display %}
+			<input type='submit' id='modal-submit' class='btn btn-{{submit_button.type}}' />
+		{% endif %}
+		{% if button_close.display  %}
+				<button class="btn btn-{{button_close.type}}" data-dismiss="modal" aria-hidden="true">{% trans button_close.value %}</button>
+		{% endif %}
+	{% endblock %}
+</div>
