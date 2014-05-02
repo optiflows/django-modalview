@@ -1,0 +1,12 @@
+
+{% extends request.is_ajax|yesno:"django_modalview/base_ajax.html,"|add:base_template_name %}
+
+	{% block content %}
+	    <div id="generic-modal" role="dialog" aria-labelledby="myModalLabel" class="modal fade">
+            <div class='modal-dialog'>
+    	    	{% block content_modal %}
+    	    	{% endblock %}
+            </div>
+	    </div>
+	{% endblock %}
+

@@ -1,0 +1,4 @@
+<form action='{{action}}' method='POST' id='modal-form' class='form-horizontal'>
+    <input type='hidden' name='csrfmiddlewaretoken' value='{{ csrf_token_value }}'/>
+        {% include 'django_modalview/form_content.html' %}
+</form>

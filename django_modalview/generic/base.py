@@ -11,10 +11,10 @@ from django_modalview.generic.response import ModalJsonResponse, ModalHttpRespon
 
 
 class ModalContextMixin(ContextMixin):
-		"""
-			A default modal context mixin that passes the keyword arguments 
-			received by get_context_modal_data as the modal template context.
-		"""
+	"""
+		A default modal context mixin that passes the keyword arguments 
+		received by get_context_modal_data as the modal template context.
+	"""
 
 	def __init__(self, title=None, description=None, icon=None, *args,
 				**kwargs):
@@ -128,7 +128,7 @@ class BaseModalView(ModalContextMixin, ModalView):
 	"""
 
 	def __init__(self, *args, **kwargs):
-		super(BaseModalTemplateView, self).__init__(*args, **kwargs)
+		super(BaseModalView, self).__init__(*args, **kwargs)
 		self.template_name = GET_TEMPLATE
 		self.content_template_name = GET_TEMPLATE_CONTENT
 
