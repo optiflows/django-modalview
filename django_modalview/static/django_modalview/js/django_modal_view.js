@@ -254,7 +254,7 @@
 	}
 
 	DjangoModalRunner.prototype.hasState = function(){
-		res = false;
+		var res = false;
 		if(this.element.attr('data-loading-text')){
 			res = true
 		}
@@ -263,14 +263,14 @@
 
 	$.fn.DjangoModalRunner=function(parameters)
     {
-       default_parameters = {
+       var default_parameters = {
        		'on_show_modal': null,
        		'on_hide_modal': null,
        		'on_submit': null,
        		'on_done': null,
        };
 
-       modal_parameters = $.fn.extend(default_parameters, parameters);
+       var modal_parameters = $.fn.extend(default_parameters, parameters);
        return this.each(function()
        {
        		
