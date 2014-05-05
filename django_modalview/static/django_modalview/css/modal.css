@@ -1,0 +1,37 @@
+#generic-modal {
+    width: 615px !important;
+}
+#generic-modal .form-horizontal{
+    margin-bottom: 0 !important;
+}
+    #form .control-group{
+        margin-top:10px;
+    }
+
+    #form .alert{
+        margin-top:10px;
+    }
+        #form .control-group .control-label{
+            font-weight: bold;
+            text-align:left !important;
+            width:200px;
+            padding-top:0;
+        }
+        #form .control-group .controls{
+            margin-left: 200px !important;
+            padding-right: 40px;
+        }
+
+
+div#generic-modal h2 {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0px;
+}
+
+div#generic-modal textarea {
+    width:100%;
+    height: 100px;
+}
+
+.modal_icon {display:inline-block;}
