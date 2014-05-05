@@ -33,7 +33,8 @@
 	
 	*/
 
-	var DjangoModalAjaxForm = function(options, parameters) {
+	var DjangoModalAjaxForm = function(modal, options, parameters) {
+		this.modal = modal;
 		this.element = $('#modal-form');
 		this.options = options;
 		this.parameters = parameters
@@ -42,6 +43,16 @@
 
 	DjangoModalAjaxForm.prototype.init = function() {
 		this.initAjaxForm();
+	}
+
+	DjangoModalAjaxForm.prototype.initOnHideAfterSubmit = function(){
+		var self = this;
+		this.modal.on('hidden.bs.modal', function(){
+			self.modal.remove();
+			if(self.parameters.on_hide_modal_after_submit){
+					self.parameters.on_hide_modal_after_submit();
+			}
+		});
 	}
 
 	DjangoModalAjaxForm.prototype.toogleSubmitState = function(){
@@ -62,7 +73,11 @@
 					self.parameters.on_done();
 				}
 				$('#modal-get-content').html(content);
+				self.initOnHideAfterSubmit();
 				var newD = new DjangoModalAjaxForm(self.options, self.parameters);
+			},
+			error: function(){
+				self.initOnHideAfterSubmit();
 			},
 			beforeSubmit: function(arr, form, df){
 				self.toogleSubmitState();
@@ -78,8 +93,9 @@
 		DjangoModal UtilRunner declaration
 	*/
 
-	var DjangoModalUtilRunner = function(options, parameters){
+	var DjangoModalUtilRunner = function(modal, options, parameters){
 		this.element = $('.util_runner');
+		this.modal = modal;
 		this.options = options;
 		this.parameters = parameters;
 		this.init();
@@ -93,7 +109,15 @@
 			return false;
 		});
 	}
-
+	DjangoModalUtilRunner.prototype.initOnHideAfterSubmit = function(){
+		var self = this;
+		this.modal.on('hidden.bs.modal', function(){
+			self.modal.remove();
+			if(self.parameters.on_hide_modal_after_submit){
+					self.parameters.on_hide_modal_after_submit();
+			}
+		});
+	}
 	DjangoModalUtilRunner.prototype.sendRequest = function(){
 		handler_response = new DjangoModalHandlerResponse();
 		var self = this;
@@ -115,7 +139,9 @@
 				var runner = new DjangoModalUtilRunner(self.options, self.parameters);
 			}, error: function(jqXHR, textStatus, errorThrown){
 				response_handler.handleErrorResponse(jqXHR, textStatus, errorThrown)
-			}
+			}, complete: function(){
+				self.initOnHideAfterSubmit();
+			},
 
 		});
 	}
@@ -150,11 +176,11 @@
 	}
 
 	DjangoModal.prototype.initUtilRunner = function(){
-		var util_runner = new DjangoModalUtilRunner(this.options, this.parameters);
+		var util_runner = new DjangoModalUtilRunner(this.element, this.options, this.parameters);
 	}
 
 	DjangoModal.prototype.initForm = function(){
-		var form = new DjangoModalAjaxForm(this.options, this.parameters);
+		var form = new DjangoModalAjaxForm(this.element, this.options, this.parameters);
 	}
 	DjangoModal.prototype.initOnHide = function(){
 		var self = this;
@@ -267,6 +293,7 @@
        		'on_show_modal': null,
        		'on_hide_modal': null,
        		'on_submit': null,
+       		'on_hide_modal_after_submit': null,
        		'on_done': null,
        };
 
