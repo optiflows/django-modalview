@@ -69,15 +69,18 @@
 			data: self.options,
 			success: function(response){
 				content = handler_response.handle(response);
+				$('#modal-get-content').html(content);
 				if(self.parameters.on_done){
 					self.parameters.on_done();
 				}
-				$('#modal-get-content').html(content);
 				self.initOnHideAfterSubmit();
 				var newD = new DjangoModalAjaxForm(self.modal, self.options, self.parameters);
 			},
 			error: function(){
 				self.initOnHideAfterSubmit();
+				if(self.parameters.on_done){
+					self.parameters.on_done();
+				}
 			},
 			beforeSubmit: function(arr, form, df){
 				self.toogleSubmitState();
@@ -131,10 +134,10 @@
 			data: self.options,
 			success: function(response) {
 				content = handler_response.handle(response);
+				$("#modal-get-content").html(content);
 				if(self.parameters.on_done){
 					self.parameters.on_done();
 				}
-				$("#modal-get-content").html(content);
 				//Re init the util runner because it's a new button
 				var runner = new DjangoModalUtilRunner(self.modal, self.options, self.parameters);
 			}, error: function(jqXHR, textStatus, errorThrown){
