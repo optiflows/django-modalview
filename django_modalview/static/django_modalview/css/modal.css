@@ -32,6 +32,13 @@ div#generic-modal textarea {
     height: 100px;
 }
 
+.modal-body {
+    padding: 15px !important;
+}
+
+.modal-footer {
+    margin-top:0px !important;
+}
 .modal_icon {
     display:inline-block;
     vertical-align: middle;
