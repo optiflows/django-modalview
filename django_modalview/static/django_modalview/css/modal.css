@@ -13,6 +13,7 @@
             text-align:left !important;
             width:200px;
             padding-top:0;
+            float: left;
         }
         #modal-form  .control-group .controls{
             margin-left: 200px !important;
