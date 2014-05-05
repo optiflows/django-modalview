@@ -74,7 +74,7 @@
 				}
 				$('#modal-get-content').html(content);
 				self.initOnHideAfterSubmit();
-				var newD = new DjangoModalAjaxForm(self.options, self.parameters);
+				var newD = new DjangoModalAjaxForm(self.modal, self.options, self.parameters);
 			},
 			error: function(){
 				self.initOnHideAfterSubmit();
@@ -136,7 +136,7 @@
 				}
 				$("#modal-get-content").html(content);
 				//Re init the util runner because it's a new button
-				var runner = new DjangoModalUtilRunner(self.options, self.parameters);
+				var runner = new DjangoModalUtilRunner(self.modal, self.options, self.parameters);
 			}, error: function(jqXHR, textStatus, errorThrown){
 				response_handler.handleErrorResponse(jqXHR, textStatus, errorThrown)
 			}, complete: function(){
