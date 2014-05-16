@@ -10,7 +10,7 @@ def README():
 
 setup(
     name='django-modalview',
-    version='0.1.1-dev',
+    version='0.1.1',
     packages=find_packages(),
     include_package_data=True,
     license='Apache License 2.0',
