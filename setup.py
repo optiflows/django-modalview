@@ -1,6 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
+
 def README():
     try:
         import pypandoc
