@@ -71,7 +71,7 @@ mymodal.js
 ```
 
 base.html
-```
+```html
     <!doctype html>
     <html lang="en">
       <head>
@@ -291,3 +291,59 @@ example:
             super(MyModalDelete, self).delete(request, *args, **kwargs)
             self.response = ModalResponse("object is deleted", "success")
 ```
+
+
+## New components
+
+The app come with two component that you will use everytimes.
+    
+### ModalButton
+
+It is the class used for all the button of the django-modalview app. 
+Its attribute are:
+        - value  the value display in the button
+        - display boolean to set if the button is diaplayed or not
+        - type  the class of the button. Bootstrap give us several values:
+                        *success
+                        *info
+                        *danger
+                        *warning
+        - url the url value. None by default. This attribute may is usefull in several cases.
+
+
+### ModalResponse
+
+See the differents exemples to understand this class. The class are the same than the button class.
+
+
+## Advanced Javascript
+
+The jquery plugin that handle the client side permit to define several callbacks:
+    - on_show_modal  callback call when the modal is displayed
+    - on_hide_modal  callback call when the modal is hidden and there wasn't a submit action.
+    - on_hide_modal_after_submit  callback call when the modal is hidden and there was a submit action
+    - on_submit  callback call after the submit action
+    - on_done  callback call after the news are apply in the modal. ex: when a modalresponse is displayed
+    
+    example:
+    ```javascript
+        
+        $('#my_modal_runner').DjangoModalRunner({
+            on_show_modal: function(){
+                alert('show');
+            },
+            on_hide_modal: function(){
+                alert('hide without action');
+            },
+            on_hide_modal_after_submit: function(){
+                alert('hide with action');
+            },
+            on_submit: function(){
+                alert('submit');
+            },
+            on_done: function(){
+                alert('done');
+            }
+            
+        });
+    ```
