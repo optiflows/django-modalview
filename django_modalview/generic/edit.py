@@ -51,6 +51,7 @@ class ModalFormMixin(ModalEditContextMixin, FormMixin):
         )
 
     def form_valid(self, form, **kwargs):
+        self._can_redirect = True
         return self._form_response(**kwargs)
 
     def form_invalid(self, form, **kwargs):
@@ -114,6 +115,7 @@ class ProcessModalPostView(BaseProcessModalView):
 
     def post(self, request, *args, **kwargs):
         self.template_name = self.content_template_name
+        self._can_redirect = True
         kwargs.update(self.get_context_modal_data())
         return self.render_to_response(
             is_ajax=self.is_ajax,

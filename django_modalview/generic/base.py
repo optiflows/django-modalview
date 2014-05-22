@@ -1,6 +1,6 @@
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
-from django.http.response import HttpResponse
+from django.http.response import HttpResponse, HttpResponseRedirect
 from django.views.generic.base import (ContextMixin, View,
                                        TemplateResponseMixin)
 
@@ -27,6 +27,7 @@ class ModalContextMixin(ContextMixin):
         self.close_button = ModalButton('Close', button_type='primary')
         self.content_template_name = None
         self.base_template_name = BASE_TEMPLATE
+        # use to know if you can redirect. Disable for the first request.
 
     def _generate_modal_context(self):
         return {
@@ -53,7 +54,12 @@ class ModalView(View):
 
     def __init__(self, *args, **kwargs):
         super(ModalView, self).__init__(*args, **kwargs)
-        self.is_ajax = None
+        self.is_ajax = False
+        self._can_redirect = False
+        self.redirect_to = None
+
+    def can_redirect(self):
+        return self._can_redirect and self.is_ajax and self.redirect_to
 
     def dispatch(self, request, *args, **kwargs):
         self.is_ajax = request.is_ajax()
@@ -71,8 +77,8 @@ class ModalTemplateMixin(TemplateResponseMixin):
 
     """
             Mixin use to render a template. A modal view can be called by a
-            simple Http request or by an Ajax request. The type of the response is
-            different for these two cases.
+            simple Http request or by an Ajax request. The type of the response
+            is different for these two cases.
     """
     json_response_class = ModalJsonResponse
     http_response_class = HttpResponse
@@ -93,15 +99,20 @@ class ModalTemplateMixin(TemplateResponseMixin):
         return render_to_string(self.get_template_names(), context)
 
     def get_response(self, is_ajax):
+
         if is_ajax:
             return ModalTemplateMixin.json_response_class
         else:
             return ModalTemplateMixin.http_response_class
 
     def render_to_response(self, is_ajax, context):
-        context.update(self.get_context_data())
         ResponseClass = self.get_response(is_ajax)
-        return ResponseClass(self._get_content(context))
+        if self.can_redirect():
+            return ResponseClass(response_type='redirect',
+                                 redirect_to=self.redirect_to)
+        else:
+            context.update(self.get_context_data())
+            return ResponseClass(self._get_content(context))
 
 
 class ModalUtilMixin(object):
@@ -174,6 +185,7 @@ class ModalTemplateUtilView(ModalUtilMixin, ModalTemplateView):
     def get(self, request, *args, **kwargs):
         get_dict = self.request.GET
         if get_dict.get('util'):
+            self._can_redirect = True
             self.get_util(self.util_name, **self.kwargs)
             self.template_name = self.content_template_name
 

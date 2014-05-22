@@ -20,7 +20,7 @@
 	}
 
 	DjangoModalHandlerResponse.prototype.handleRedirectResponse = function(response){
-		window.location = response.url;
+		window.location = response.redirect_to;
 	}
 
 	DjangoModalHandlerResponse.prototype.handleErrorResponse = function(jqXHR, textStatus, errorThrown){
@@ -63,24 +63,25 @@
 	DjangoModalAjaxForm.prototype.initAjaxForm = function(){
 		var self = this;
 		var n = false;
-		handler_response = new DjangoModalHandlerResponse();
+		var handler_response = new DjangoModalHandlerResponse();
 		this.element.ajaxForm({
 			dataType: 'json',
 			data: self.options,
-			success: function(response){
-				content = handler_response.handle(response);
+			success: function(response, statusText, xhr){
+				var content = handler_response.handle(response);
 				$('#modal-get-content').html(content);
 				if(self.parameters.on_done){
 					self.parameters.on_done();
 				}
 				self.initOnHideAfterSubmit();
 				var newD = new DjangoModalAjaxForm(self.modal, self.options, self.parameters);
-			},
-			error: function(){
+            },
+			error: function(xhr, textStatus, errorThrown){
 				self.initOnHideAfterSubmit();
 				if(self.parameters.on_done){
 					self.parameters.on_done();
 				}
+                handler_response.handleErrorResponse(xhr, textStatus, errorThrown)
 			},
 			beforeSubmit: function(arr, form, df){
 				self.toogleSubmitState();
@@ -122,7 +123,7 @@
 		});
 	}
 	DjangoModalUtilRunner.prototype.sendRequest = function(){
-		handler_response = new DjangoModalHandlerResponse();
+		var handler_response = new DjangoModalHandlerResponse();
 		var self = this;
 		if(self.parameters.on_submit){
 			self.parameters.on_submit();
@@ -132,18 +133,18 @@
 			dataType: 'json',
 			url: self.element.attr('href'),
 			data: self.options,
-			success: function(response) {
-				content = handler_response.handle(response);
-				$("#modal-get-content").html(content);
-				if(self.parameters.on_done){
-					self.parameters.on_done();
-				}
-				//Re init the util runner because it's a new button
-				var runner = new DjangoModalUtilRunner(self.modal, self.options, self.parameters);
-			}, error: function(jqXHR, textStatus, errorThrown){
-				response_handler.handleErrorResponse(jqXHR, textStatus, errorThrown)
+			success: function(response, statusText, xhr) {
+                var content = handler_response.handle(response);
+                $("#modal-get-content").html(content);
+                //Re init the util runner because it's a new button
+                var runner = new DjangoModalUtilRunner(self.modal, self.options, self.parameters);
+			}, error: function(xhr, textStatus, errorThrown){
+                handler_response.handleErrorResponse(xhr, textStatus, errorThrown)
 			}, complete: function(){
 				self.initOnHideAfterSubmit();
+                if(self.parameters.on_done){
+                    self.parameters.on_done();
+                }
 			},
 
 		});
