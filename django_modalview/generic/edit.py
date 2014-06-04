@@ -45,10 +45,7 @@ class ModalFormMixin(ModalEditContextMixin, FormMixin):
 
     def _form_response(self, **kwargs):
         kwargs.update(self.get_context_modal_data())
-        return self.render_to_response(
-            is_ajax=self.is_ajax,
-            context=kwargs
-        )
+        return self.render_to_response(context=kwargs)
 
     def form_valid(self, form, **kwargs):
         self._can_redirect = True
@@ -117,10 +114,7 @@ class ProcessModalPostView(BaseProcessModalView):
         self.template_name = self.content_template_name
         self._can_redirect = True
         kwargs.update(self.get_context_modal_data())
-        return self.render_to_response(
-            is_ajax=self.is_ajax,
-            context=kwargs
-        )
+        return self.render_to_response(context=kwargs)
 
 
 class ModalDeletionMixin(ModalEditContextMixin):

@@ -1,34 +1,46 @@
 import json
 
 from django.http.response import HttpResponse
+from django.core.exceptions import ImproperlyConfigured
 
 
-class ModalJsonResponse(HttpResponse):
-
+class BaseModalJsonResponse(HttpResponse):
     content_type = 'application/json'
-    response_type = 'normal'
 
-    def __init__(self, content='empty', response_type='normal',
-                 redirect_to='none', *args, **kwargs):
-        opt = {
-            'response_type': response_type,
-            'redirect_to': redirect_to
-        }
-        super(ModalJsonResponse, self).__init__(self.get_content(content,
-                                                                 **opt),
-                                                self.content_type, *args,
-                                                **kwargs)
+    def __init__(self, *args, **kwargs):
+        jsn_content = json.dumps(self.get_content())
+        super(BaseModalJsonResponse, self).__init__(jsn_content,
+                                                    self.content_type,
+                                                    *args, **kwargs)
 
-    def get_content(self, content, **kwargs):
-        json_dict = {
-            'type': kwargs['response_type'],
-            'content': content,
-            'redirect_to': kwargs['redirect_to']
-        }
-        return json.dumps(json_dict)
+    def get_content(self):
+        raise ImproperlyConfigured("No method get_content")
 
 
-class ModalHttpResponse(HttpResponse):
+class ModalJsonResponse(BaseModalJsonResponse):
+
+    type = 'normal'
 
     def __init__(self, content, *args, **kwargs):
-        super(ModalHttpResponse, self).__init__(content, *args, **kwargs)
+        self.modal_content = content
+        super(ModalJsonResponse, self).__init__(*args, **kwargs)
+
+    def get_content(self):
+        return {
+            'type': self.type,
+            'content': self.modal_content
+        }
+
+
+class ModalJsonResponseRedirect(BaseModalJsonResponse):
+    type = 'redirect'
+
+    def __init__(self, redirect_to, *args, **kwargs):
+        self.redirect_to = redirect_to
+        super(ModalJsonResponseRedirect, self).__init__(*args, **kwargs)
+
+    def get_content(self):
+        return {
+            'type': self.type,
+            'redirect_to': self.redirect_to
+        }
