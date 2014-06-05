@@ -302,6 +302,7 @@
     {
        var default_parameters = {
        		'events': ['click'],
+            'on_event': null,
        		'on_show_modal': null,
        		'on_hide_modal': null,
        		'on_submit': null,
@@ -313,7 +314,10 @@
        return this.each(function()
        {
        		for(var key in modal_parameters.events){
-       			$(this).on(modal_parameters.events[key], function(){
+       			$(this).on(modal_parameters.events[key], function(event){
+                    if(modal_parameters.on_event){
+                        modal_parameters.on_event(event);
+                    }
            			new DjangoModalRunner($(this), modal_parameters);
            			return false;
        		    });
