@@ -280,7 +280,14 @@
 	}
 
 	DjangoModalRunner.prototype.setOptions = function() {
-		this.data_options = this.element.data();
+        var datas = {};
+        var self = this;
+        $.each(self.element.data(), function(key, value){
+            if(self.element.attr('data-'+key) !== undefined){
+                datas[key] = value;
+            }
+        });
+		this.data_options = datas;
 	}
 
 	DjangoModalRunner.prototype.hasState = function(){
