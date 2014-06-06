@@ -55,6 +55,34 @@ class ModalFormMixin(ModalEditContextMixin, FormMixin):
         return self._form_response(**kwargs)
 
 
+class ModalFormUtilMixin(ModalFormMixin, ModalUtilMixin):
+    """
+        Mixin that provide a way to show and to handle a modal with a django
+        form
+    """
+    def util_on_form_valid(self, **kwargs):
+        pass
+
+    def util_on_form_invalid(self, **kwargs):
+        pass
+
+    def dispatch(self, request, *args, **kwargs):
+        self.kwargs.update(kwargs)
+        self.kwargs.update(request.GET))
+        return super(ModalFormUtilMixin, self).dispatch(request, *args,
+                                                        **kwargs)
+
+    def form_valid(self, form, **kwargs):
+        self.kwargs.update(**form.cleaned_data)
+        self.get_util('util_on_form_valid', **self.kwargs)
+        return super(ModalFormUtilMixin, self).form_valid(form, **kwargs)
+
+    def form_invalid(self, form, **kwargs):
+        self.kwargs.update(**form.cleaned_data)
+        self.get_util('util_on_form_invalid', **self.kwargs)
+        return super(ModalFormUtilMixin, self).form_invalid(form, **kwargs)
+
+
 class ModalModelFormMixin(ModalFormMixin, ModelFormMixin):
 
     """
@@ -185,10 +213,24 @@ class BaseModalFormView(ModalFormMixin, ProcessModalFormView):
     """
 
 
+class BaseModalFormUtilView(ModalFormUtilMixin, ProcessModalFormView):
+
+    """
+        A base view that provide a way to handle a modal with form and util
+    """
+
+
 class ModalFormView(ModalTemplateMixin, BaseModalFormView):
 
     """
             A view to handle a modal with form and to render it.
+    """
+
+
+class ModalFormUtilView(ModalTemplateMixin, BaseModalFormUtilView):
+
+    """
+        A view to handle a modal with form/util and to render it.
     """
 
 
