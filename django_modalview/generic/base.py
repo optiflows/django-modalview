@@ -24,7 +24,7 @@ class ModalContextMixin(ContextMixin):
         self.title = "title"
         self.response = None
         self.icon = icon
-        self.description = "description"
+        self.description = ""
         self.close_button = ModalButton('Close', button_type='primary')
         self.content_template_name = None
         self.base_template_name = BASE_TEMPLATE
