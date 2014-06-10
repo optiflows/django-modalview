@@ -68,7 +68,7 @@ class ModalFormUtilMixin(ModalFormMixin, ModalUtilMixin):
 
     def dispatch(self, request, *args, **kwargs):
         self.kwargs.update(kwargs)
-        self.kwargs.update(request.GET))
+        self.kwargs.update(request.GET)
         return super(ModalFormUtilMixin, self).dispatch(request, *args,
                                                         **kwargs)
 
@@ -155,6 +155,29 @@ class ModalDeletionMixin(ModalEditContextMixin):
         self.object.delete()
 
 
+class ModalPostMixin(ModalEditContextMixin):
+    '''
+        A mixin that provide a way to handle a post request
+    '''
+
+
+class ModalPostUtilMixin(ModalPostMixin, ModalUtilMixin):
+
+    def util_on_post(self, *args, **kwargs):
+        pass
+
+    def dispatch(self, request, *args, **kwargs):
+        self.kwargs.update(kwargs)
+        self.kwargs.update(request.GET)
+        return super(ModalPostUtilMixin, self).dispatch(request, *args,
+                                                        **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.kwargs.update(kwargs)
+        self.get_util('util_on_post', **self.kwargs)
+        return super(ModalPostUtilMixin, self).post(request, **kwargs)
+
+
 class BaseModalUpdateView(ModalModelFormMixin, ProcessModalFormView):
 
     """
@@ -198,11 +221,18 @@ class BaseModalDeleteView(ModalDeletionMixin, ProcessModalPostView):
         return super(BaseModalDeleteView, self).post(request, *args, **kwargs)
 
 
-class BaseModalPostView(ProcessModalPostView):
+class BaseModalPostView(ModalPostMixin, ProcessModalPostView):
 
     """
             A base view that provide a way to handle a modal that can send a post
             request and handle its response.
+    """
+
+
+class BaseModalPostUtilView(ModalPostUtilMixin, ProcessModalPostView):
+    """
+            A base view that provide a way to handle a modal that can send a post
+            request, run an util and handle its response.
     """
 
 
@@ -248,11 +278,15 @@ class ModalUpdateView(ModalTemplateMixin, BaseModalUpdateView):
     """
 
 
-class ModalPostView(ModalEditContextMixin, ModalTemplateMixin,
-                    BaseModalPostView):
+class ModalPostView(ModalTemplateMixin, BaseModalPostView):
 
     """
             A view to handle a modal with a post request sender and to render it.
+    """
+
+
+class ModalPostUtilView(ModalTemplateMixin, BaseModalPostUtilView):
+    """
     """
 
 
