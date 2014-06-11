@@ -4,6 +4,7 @@ from django.views.generic.edit import (FormMixin, ProcessFormView,
 from django_modalview.generic.base import (ModalContextMixin, ModalView,
                                            ModalTemplateMixin, ModalUtilMixin)
 from django_modalview.generic.component import (FORM_TEMPLATE_CONTENT,
+                                                LAST_FORM_TEMPLATE,
                                                 FORM_TEMPLATE, ModalButton)
 
 
@@ -20,11 +21,13 @@ class ModalEditContextMixin(ModalContextMixin):
         self.action = None
         self.content_template_name = FORM_TEMPLATE_CONTENT
         self.submit_button = ModalButton(value='send', button_type='primary')
+        self.form_content_template_name = LAST_FORM_TEMPLATE
 
     def get_context_modal_data(self, **kwargs):
         kwargs.update({
             'submit_button': self.submit_button,
             'action': self.action,
+            'form_template_name': self.form_content_template_name
         })
         return super(ModalEditContextMixin,
                      self).get_context_modal_data(**kwargs)

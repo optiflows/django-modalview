@@ -1,10 +1,14 @@
 {% extends 'django_modalview/modal_content.html' %}
 
 {% block modal-description %}
-    {% if description %}
-        {{ description|safe }}
-    {% endif %}
-    {% if form %}
-        {% include 'django_modalview/modal_form.html' %}
-    {% endif %}
+    {% block description %}
+        {% if description %}
+            {{ description|safe }}
+        {% endif %}
+    {% endblock %}
+    {% block form %}
+        {% if form %}
+            {% include 'django_modalview/modal_form.html' %}
+        {% endif %}
+    {% endblock %}
 {% endblock %}

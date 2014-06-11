@@ -25,6 +25,7 @@ div.modal-header h2 {
     display: inline-block;
     vertical-align: middle;
     margin: 0px;
+    width: 500px;
 }
 
 div.modal-body textarea {

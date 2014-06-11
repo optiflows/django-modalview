@@ -2,6 +2,7 @@ GET_TEMPLATE = "django_modalview/modal.html"
 GET_TEMPLATE_CONTENT = "django_modalview/modal_get_content.html"
 FORM_TEMPLATE = "django_modalview/modal.html"
 FORM_TEMPLATE_CONTENT = "django_modalview/modal_form_content.html"
+LAST_FORM_TEMPLATE = "django_modalview/form_content.html"
 BASE_TEMPLATE = "django_modalview/base.html"
 
 
