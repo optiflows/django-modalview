@@ -1,4 +1,5 @@
 # django-modalview
+[![pypi version](http://img.shields.io/pypi/v/django-modalview.svg)](https://pypi.python.org/pypi/django-modalview) [![pypi download week](http://img.shields.io/pypi/dw/django-modalview.svg)](https://pypi.python.org/pypi/django-modalview)
 
 Django app to build bootstrap modal with new class based views and jquery plugin.
 
