@@ -313,8 +313,8 @@
        var modal_parameters = $.fn.extend(default_parameters, parameters);
        return this.each(function()
        {
-       		for(var key in modal_parameters.events){
-       			$(this).on(modal_parameters.events[key], function(event){
+       		for(var i = 0; i < modal_parameters.events.length; i++){
+       			$(this).on(modal_parameters.events[i], function(event){
                     if(modal_parameters.on_event){
                         modal_parameters.on_event(event);
                     }
