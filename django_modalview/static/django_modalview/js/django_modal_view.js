@@ -20,7 +20,14 @@
 	}
 
 	DjangoModalHandlerResponse.prototype.handleRedirectResponse = function(response){
-		window.location = response.redirect_to;
+		window.location.replace(response.redirect_to);
+
+		var redirect_url = response.redirect_to.split('#')[0];
+		var window_url = window.location.href.split('#')[0];
+
+		if (redirect_url == window_url) {
+			window.location.reload();
+		}
 	}
 
 	DjangoModalHandlerResponse.prototype.handleErrorResponse = function(jqXHR, textStatus, errorThrown){
