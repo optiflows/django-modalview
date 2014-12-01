@@ -6,7 +6,7 @@ def README():
     try:
         import pypandoc
         return pypandoc.convert('README.md', 'rst')
-    except (IOError, ImportError):
+    except (IOError, ImportError, OSError):
         return open('README.md').read()
 
 setup(
@@ -25,7 +25,7 @@ setup(
     ],
     setup_requires=[
         'setuptools_git>=1.0',
-        'pypandoc',
+        'pypandoc==0.8.3',
     ],
     classifiers=[
         'Environment :: Web Environment',
