@@ -1,6 +1,6 @@
 import json
 
-from django.http.response import HttpResponse
+from django.http import HttpResponse
 from django.core.exceptions import ImproperlyConfigured
 
 

@@ -1,8 +1,7 @@
 from django.middleware.csrf import get_token
 from django.template.loader import render_to_string
-from django.http.response import HttpResponse, HttpResponseRedirect
-from django.views.generic.base import (ContextMixin, View,
-                                       TemplateResponseMixin)
+from django.http import HttpResponse, HttpResponseRedirect
+from django.views.generic.base import (View, TemplateResponseMixin)
 
 from django_modalview.generic.component import (ModalButton, GET_TEMPLATE,
                                                 GET_TEMPLATE_CONTENT,
@@ -11,16 +10,21 @@ from django_modalview.generic.response import (ModalJsonResponse,
                                                ModalJsonResponseRedirect)
 
 
-class ModalContextMixin(ContextMixin):
+class ModalContextMixin(object):
 
     """
             A default modal context mixin that passes the keyword arguments
             received by get_context_modal_data as the modal template context.
     """
 
+    def get_context_data(self, **kwargs):
+        if 'view' not in kwargs:
+            kwargs['view'] = self
+        return kwargs
+    
     def __init__(self, title=None, description=None, icon=None, *args,
                  **kwargs):
-        super(ContextMixin, self).__init__(*args, **kwargs)
+        super(ModalContextMixin, self).__init__(*args, **kwargs)
         self.title = "title"
         self.response = None
         self.icon = icon
