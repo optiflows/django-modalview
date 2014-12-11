@@ -71,7 +71,7 @@
 				var content = handler_response.handle(response);
 				$('#modal-get-content').html(content);
 				if(self.parameters.on_done){
-					self.parameters.on_done();
+					self.parameters.on_done(response, statusText, xhr);
 				}
 				self.initOnHideAfterSubmit();
 				var newD = new DjangoModalAjaxForm(self.modal, self.options, self.parameters);
@@ -79,7 +79,7 @@
 			error: function(xhr, textStatus, errorThrown){
 				self.initOnHideAfterSubmit();
 				if(self.parameters.on_done){
-					self.parameters.on_done();
+					self.parameters.on_done(xhr, textStatus, errorThrown);
 				}
                 handler_response.handleErrorResponse(xhr, textStatus, errorThrown)
 			},

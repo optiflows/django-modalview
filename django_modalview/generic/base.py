@@ -108,14 +108,14 @@ class ModalTemplateMixin(TemplateResponseMixin):
 
         if self.is_ajax:
             if not self.can_redirect():
-                return ModalTemplateMixin.json_response_class
+                return self.json_response_class
             else:
-                return ModalTemplateMixin.json_response_redirect_class
+                return self.json_response_redirect_class
         else:
             if not self.can_redirect():
-                return ModalTemplateMixin.http_response_class
+                return self.http_response_class
             else:
-                return ModalTemplateMixin.http_response_redirect_class
+                return self.http_response_redirect_class
 
     def render_to_response(self, context):
         ResponseClass = self.get_response()
