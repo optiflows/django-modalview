@@ -139,7 +139,7 @@ class ModalUtilMixin(object):
     def get_util(self, func_name, *args, **kwargs):
         if hasattr(self, func_name):
             util_kwargs = self.get_util_kwargs(**kwargs)
-            getattr(self, func_name)(*args, **util_kwargs)
+            getattr(self, func_name)(*args, **self.util_kwargs)
         else:
             raise Exception("You should implement one method name"
                             " {name}!".format(name=func_name))
@@ -147,7 +147,6 @@ class ModalUtilMixin(object):
     def get_util_kwargs(self, *args, **kwargs):
         kwargs.update(self.request.GET)
         self.util_kwargs.update(**kwargs)
-        return self.util_kwargs
 
 
 class BaseModalView(ModalContextMixin, ModalView):
