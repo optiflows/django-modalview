@@ -21,7 +21,7 @@ setup(
     author='Valentin Monte',
     author_email='valentin.monte@optiflows.com',
     install_requires=[
-        'django>=1.5',
+        'django>=1.4',
     ],
     setup_requires=[
         'setuptools_git>=1.0',
