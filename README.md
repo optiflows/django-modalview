@@ -74,22 +74,20 @@ mymodal.js
 base.html
 ```html
     <!doctype html>
-    <html lang="en">
-      <head>
-         ...
-         //If you use your own bootstrap files you can use them.
-        <link rel="stylesheet" href="{% static 'django_modalview/css/bootstrap.min.css' %}" type="text/css" />
-        <link rel="stylesheet" href="{% static 'django_modalview/css/modal.css' %}" type="text/css" />
-        ...
-        <script type="text/javascript" src="{% static 'your jquery files' %}></script>
-        <script type="text/javascript" src="{% static 'django_modalview/js/bootstrap.min.js' %}></script>
-        <script type="text/javascript" src="{% static 'django_modalview/js/django_modal_view.js' %}></script>
-        <script type="text/javascript" src="{% static 'myapp/js/mymodal.js" %}></script>
-      </head>
-      <body>
-        <button id="my_modal_runner">Display modal </button>
-      </body>
-    </html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="{% static 'django_modalview/css/bootstrap.min.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% static 'django_modalview/css/modal.css' %}" type="text/css" />
+    ...
+    <script type="text/javascript" src="{% static 'your jquery files' %}"></script>
+    <script type="text/javascript" src="{% static 'django_modalview/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'django_modalview/js/django_modal_view.js' %}"></script>
+    <script type="text/javascript" src="{% static 'myapp/js/mymodal.js' %}"></script>
+  </head>
+  <body>
+    <button id="my_modal_runner">Display modal </button>
+  </body>
+</html>
 ```
 
 This is the most simple case. In the next parts I am going to show you how to add logic in the class based views but also in the Jquery plugin.
