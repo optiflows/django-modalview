@@ -14,7 +14,7 @@ To use it you should add it to your `INSTALLED_APPS` in `settings.py`.
 ```python
 INSTALLED_APPS = (
     ...
-    'django-modalview',
+    'django_modalview',
     ...
 )
 ```
