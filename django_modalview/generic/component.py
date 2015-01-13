@@ -9,13 +9,14 @@ BASE_TEMPLATE = "django_modalview/base.html"
 class ModalButton(object):
 
     def __init__(self, value=None, button_type='info',
-                 display=True, url=None, *args, **kwargs):
+                 display=True, url=None, loading_value="loading...", *args, **kwargs):
 
         super(ModalButton, self).__init__(*args, **kwargs)
         self.value = value
         self.display = display
         self.type = button_type
         self.url = url
+        self.loading_value = loading_value
 
 
 class ModalResponse(object):
