@@ -228,6 +228,7 @@ class BaseModalDeleteView(ModalDeletionMixin, ProcessModalPostView):
         self.submit_button.value = 'Delete'
 
     def post(self, request, *args, **kwargs):
+        self.object = self.get_object()        
         self.delete(request, *args, **kwargs)
         return super(BaseModalDeleteView, self).post(request, *args, **kwargs)
 
