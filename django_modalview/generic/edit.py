@@ -145,7 +145,7 @@ class ProcessModalPostView(BaseProcessModalView):
         return self.render_to_response(context=kwargs)
 
 
-class ModalDeletionMixin(SingleObjectMixin, ModalEditContextMixin):
+class ModalDeletionMixin(ModalEditContextMixin):
 
     """
             A mixin that provide a way to delete an object.
@@ -154,14 +154,6 @@ class ModalDeletionMixin(SingleObjectMixin, ModalEditContextMixin):
     def delete(self, request, *args, **kwargs):
         self.object.delete()
         
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super(ModalDeletionMixin, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super(ModalDeletionMixin, self).post(request, *args, **kwargs)
-
         
 class ModalPostMixin(ModalEditContextMixin):
     '''
@@ -215,7 +207,7 @@ class BaseModalCreateView(BaseModalUpdateView):
         return None
 
 
-class BaseModalDeleteView(ModalDeletionMixin, ProcessModalPostView):
+class BaseModalDeleteView(ModalDeletionMixin, SingleObjectMixin, ProcessModalPostView):
 
     """
             A base view that provide a way to delete an object in a modal.
@@ -227,6 +219,10 @@ class BaseModalDeleteView(ModalDeletionMixin, ProcessModalPostView):
         self.submit_button.type = 'danger'
         self.submit_button.value = 'Delete'
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(BaseModalDeleteView, self).get(request, *args, **kwargs)
+        
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()        
         self.delete(request, *args, **kwargs)
