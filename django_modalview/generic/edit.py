@@ -1,5 +1,5 @@
 from django.views.generic.edit import (FormMixin, ProcessFormView,
-                                       ModelFormMixin, DeletionMixin)
+                                       ModelFormMixin, SingleObjectMixin)
 
 from django_modalview.generic.base import (ModalContextMixin, ModalView,
                                            ModalTemplateMixin, ModalUtilMixin)
@@ -15,13 +15,10 @@ class ModalEditContextMixin(ModalContextMixin):
             the modal context.
 
     """
-
-    def __init__(self, *args, **kwargs):
-        super(ModalEditContextMixin, self).__init__(*args, **kwargs)
-        self.action = None
-        self.content_template_name = FORM_TEMPLATE_CONTENT
-        self.submit_button = ModalButton(value='send', button_type='primary')
-        self.form_content_template_name = LAST_FORM_TEMPLATE
+    action = None
+    content_template_name = FORM_TEMPLATE_CONTENT
+    submit_button = ModalButton(value='send', button_type='primary')
+    form_content_template_name = LAST_FORM_TEMPLATE
 
     def get_context_modal_data(self, **kwargs):
         kwargs.update({
@@ -148,7 +145,7 @@ class ProcessModalPostView(BaseProcessModalView):
         return self.render_to_response(context=kwargs)
 
 
-class ModalDeletionMixin(ModalEditContextMixin):
+class ModalDeletionMixin(SingleObjectMixin, ModalEditContextMixin):
 
     """
             A mixin that provide a way to delete an object.
@@ -156,8 +153,16 @@ class ModalDeletionMixin(ModalEditContextMixin):
 
     def delete(self, request, *args, **kwargs):
         self.object.delete()
+        
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(ModalDeletionMixin, self).get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(ModalDeletionMixin, self).post(request, *args, **kwargs)
 
+        
 class ModalPostMixin(ModalEditContextMixin):
     '''
         A mixin that provide a way to handle a post request
@@ -181,14 +186,22 @@ class ModalPostUtilMixin(ModalPostMixin, ModalUtilMixin):
         return super(ModalPostUtilMixin, self).post(request, **kwargs)
 
 
-class BaseModalUpdateView(ModalModelFormMixin, ProcessModalFormView):
+class BaseModalUpdateView(ModalModelFormMixin, SingleObjectMixin, ProcessModalFormView):
 
     """
             A base view that provide a way to display a modelform, in a modal,
             to update an object. The attribute that contains the instance is
             self.object.
     """
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(BaseModalUpdateView, self).get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(BaseModalUpdateView, self).post(request, *args, **kwargs)
+        
 
 class BaseModalCreateView(BaseModalUpdateView):
 
@@ -198,13 +211,8 @@ class BaseModalCreateView(BaseModalUpdateView):
             self.object.
     """
 
-    def get(self, request, *args, **kwargs):
-        self.object = None
-        return super(BaseModalCreateView, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = None
-        return super(BaseModalCreateView, self).post(request, *args, **kwargs)
+    def get_object(self):
+        return None
 
 
 class BaseModalDeleteView(ModalDeletionMixin, ProcessModalPostView):

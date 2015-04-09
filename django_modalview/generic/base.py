@@ -16,7 +16,12 @@ class ModalContextMixin(object):
             A default modal context mixin that passes the keyword arguments
             received by get_context_modal_data as the modal template context.
     """
-
+    title = "title"
+    close_button = ModalButton('Close', button_type='primary')
+    content_template_name = None
+    base_template_name = BASE_TEMPLATE
+    description = ""
+    
     def get_context_data(self, **kwargs):
         if 'view' not in kwargs:
             kwargs['view'] = self
@@ -25,19 +30,18 @@ class ModalContextMixin(object):
     def __init__(self, title=None, description=None, icon=None, *args,
                  **kwargs):
         super(ModalContextMixin, self).__init__(*args, **kwargs)
-        self.title = "title"
         self.response = None
         self.icon = icon
-        self.description = ""
-        self.close_button = ModalButton('Close', button_type='primary')
-        self.content_template_name = None
-        self.base_template_name = BASE_TEMPLATE
+        if title:
+            self.title = title        
+        if description:
+            self.description = description        
         # use to know if you can redirect. Disable for the first request.
 
     def _generate_modal_context(self):
         return {
             'title': self.title,
-            'description': self.description,
+            'description': self.get_description(),
             'button_close': self.close_button,
             'content_template_name': self.content_template_name,
             'base_template_name': self.base_template_name,
@@ -49,6 +53,9 @@ class ModalContextMixin(object):
         kwargs.update(self._generate_modal_context())
         return kwargs
 
+    def get_description(self):
+        return self.description
+        
 
 class ModalView(View):
 
@@ -56,12 +63,12 @@ class ModalView(View):
             Parent class of all the ModalView. Extends the Django generic View
             to override the dispatch method and to overload the get method.
     """
-
+    redirect_to = None
+    
     def __init__(self, *args, **kwargs):
         super(ModalView, self).__init__(*args, **kwargs)
         self.is_ajax = False
         self._can_redirect = False
-        self.redirect_to = None
 
     def can_redirect(self):
         return self._can_redirect and self.redirect_to
