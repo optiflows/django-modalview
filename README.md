@@ -68,7 +68,9 @@ urls.py
 
 mymodal.js
 ```javascript
+$(function(){
     $('#my_modal_runner').DjangoModalRunner();
+});
 ```
 
 base.html
@@ -85,7 +87,7 @@ base.html
     <script type="text/javascript" src="{% static 'myapp/js/mymodal.js' %}"></script>
   </head>
   <body>
-    <button id="my_modal_runner">Display modal </button>
+    <a id="my_modal_runner" class='btn' href='{% url "mymodal"%}'>Display modal </a>
   </body>
 </html>
 ```
