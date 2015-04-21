@@ -71,7 +71,7 @@ class ModalView(View):
         self._can_redirect = False
 
     def can_redirect(self):
-        return self._can_redirect and self.redirect_to
+        return self._can_redirect and self.get_redirect_url()
 
     def dispatch(self, request, *args, **kwargs):
         self.is_ajax = request.is_ajax()
@@ -82,6 +82,9 @@ class ModalView(View):
         return self.render_to_response(
             context=context
         )
+        
+    def get_redirect_url(self):
+        return self.redirect_to     
 
 
 class ModalTemplateMixin(TemplateResponseMixin):
@@ -111,26 +114,26 @@ class ModalTemplateMixin(TemplateResponseMixin):
         })
         return render_to_string(self.get_template_names(), context)
 
-    def get_response(self):
-
+    def get_response(self, can_redirect=False):
         if self.is_ajax:
-            if not self.can_redirect():
+            if not can_redirect:
                 return self.json_response_class
             else:
                 return self.json_response_redirect_class
         else:
-            if not self.can_redirect():
+            if not can_redirect:
                 return self.http_response_class
             else:
                 return self.http_response_redirect_class
 
     def render_to_response(self, context):
-        ResponseClass = self.get_response()
-        if not self.can_redirect():
+        redirect_url = self.can_redirect()
+        ResponseClass = self.get_response(can_redirect=redirect_url)
+        if not redirect_url:
             context.update(self.get_context_data())
             return ResponseClass(self._get_content(context))
         else:
-            return ResponseClass(self.redirect_to)
+            return ResponseClass(redirect_url)
 
 
 class ModalUtilMixin(object):
