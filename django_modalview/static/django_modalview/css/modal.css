@@ -26,6 +26,9 @@ div.modal-header h2 {
     vertical-align: middle;
     margin: 0px;
     width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 div.modal-body textarea {
