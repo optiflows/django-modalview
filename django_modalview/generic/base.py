@@ -32,6 +32,7 @@ class ModalContextMixin(object):
         self.close_button = ModalButton('Close', button_type='primary')
         self.content_template_name = None
         self.base_template_name = BASE_TEMPLATE
+        self.modal_size = kwargs.get('modal_size', 'modal-md')
         # use to know if you can redirect. Disable for the first request.
 
     def _generate_modal_context(self):
@@ -43,6 +44,7 @@ class ModalContextMixin(object):
             'base_template_name': self.base_template_name,
             'icon': self.icon,
             'response': self.response,
+            'modal_size': self.modal_size,
         }
 
     def get_context_modal_data(self, **kwargs):

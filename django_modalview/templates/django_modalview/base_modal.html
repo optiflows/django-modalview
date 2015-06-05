@@ -3,7 +3,7 @@
 
 	{% block content %}
 	    <div id="generic-modal" role="dialog" aria-labelledby="myModalLabel" class="modal fade">
-            <div class='modal-dialog'>
+            <div class='modal-dialog {{modal_size}}'>
     	    	{% block content_modal %}
     	    	{% endblock %}
             </div>
