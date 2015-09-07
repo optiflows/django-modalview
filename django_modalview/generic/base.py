@@ -3,18 +3,24 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.base import (View, TemplateResponseMixin)
 
-from django_modalview.generic.component import (ModalButton, GET_TEMPLATE,
-                                                GET_TEMPLATE_CONTENT,
-                                                BASE_TEMPLATE)
-from django_modalview.generic.response import (ModalJsonResponse,
-                                               ModalJsonResponseRedirect)
+from django_modalview.generic.component import (
+    ModalButton, GET_TEMPLATE,
+    GET_TEMPLATE_CONTENT,
+    BASE_TEMPLATE
+)
+
+from django_modalview.generic.response import (
+    ModalJsonResponse,
+    ModalJsonResponseRedirect,
+    ModalJsonResponseReference
+)
 
 
 class ModalContextMixin(object):
 
     """
-            A default modal context mixin that passes the keyword arguments
-            received by get_context_modal_data as the modal template context.
+        A default modal context mixin that passes the keyword arguments
+        received by get_context_modal_data as the modal template context.
     """
 
     def get_context_data(self, **kwargs):
@@ -22,9 +28,9 @@ class ModalContextMixin(object):
             kwargs['view'] = self
         return kwargs
     
-    def __init__(self, title=None, description=None, icon=None, *args,
-                 **kwargs):
-        super(ModalContextMixin, self).__init__(*args, **kwargs)
+    def __init__(self, title=None, description=None, icon=None, *args, **kw):
+        super(ModalContextMixin, self).__init__(*args, **kw)
+        
         self.title = "title"
         self.response = None
         self.icon = icon
@@ -32,7 +38,10 @@ class ModalContextMixin(object):
         self.close_button = ModalButton('Close', button_type='primary')
         self.content_template_name = None
         self.base_template_name = BASE_TEMPLATE
-        self.modal_size = kwargs.get('modal_size', 'modal-md')
+        
+        #  New options 
+        self.modal_size = kw.get('modal_size', 'modal-md')
+        self.modal_id = kw.get('modal_id', 'generic-modal')
         # use to know if you can redirect. Disable for the first request.
 
     def _generate_modal_context(self):
@@ -44,7 +53,9 @@ class ModalContextMixin(object):
             'base_template_name': self.base_template_name,
             'icon': self.icon,
             'response': self.response,
+            # New options in context
             'modal_size': self.modal_size,
+            'modal_id': self.modal_id
         }
 
     def get_context_modal_data(self, **kwargs):
@@ -55,8 +66,8 @@ class ModalContextMixin(object):
 class ModalView(View):
 
     """
-            Parent class of all the ModalView. Extends the Django generic View
-            to override the dispatch method and to overload the get method.
+        Parent class of all the ModalView. Extends the Django generic View
+        to override the dispatch method and to overload the get method.
     """
 
     def __init__(self, *args, **kwargs):
@@ -79,12 +90,13 @@ class ModalView(View):
         )
 
 
-class ModalTemplateMixin(TemplateResponseMixin):
+
+class ModalTemplateResponseMixin(TemplateResponseMixin):
 
     """
-            Mixin use to render a template. A modal view can be called by a
-            simple Http request or by an Ajax request. The type of the response
-            is different for these two cases.
+        Mixin use to render a template. A modal view can be called by a
+        simple Http request or by an Ajax request. The type of the response
+        is different for these two cases.
     """
     json_response_class = ModalJsonResponse
     json_response_redirect_class = ModalJsonResponseRedirect
@@ -97,8 +109,8 @@ class ModalTemplateMixin(TemplateResponseMixin):
 
     def _get_content(self, context):
         """
-                Add the csrf_token_value because the mixin use render_to_string
-                and not render.
+            Add the csrf_token_value because the mixin use render_to_string
+            and not render.
         """
         self._valid_template()
         context.update({
@@ -119,6 +131,10 @@ class ModalTemplateMixin(TemplateResponseMixin):
             else:
                 return self.http_response_redirect_class
 
+
+
+class ModalTemplateMixin(ModalTemplateResponseMixin):
+
     def render_to_response(self, context):
         ResponseClass = self.get_response()
         if not self.can_redirect():
@@ -126,6 +142,29 @@ class ModalTemplateMixin(TemplateResponseMixin):
             return ResponseClass(self._get_content(context))
         else:
             return ResponseClass(self.redirect_to)
+
+
+
+class ModalTemplateReferenceMixin(ModalTemplateResponseMixin):
+    
+    json_response_class = ModalJsonResponseReference
+
+    def render_to_response(self, context):
+        ResponseClass = self.get_response()
+
+        if not self.can_redirect():
+            data = None
+            context.update(self.get_context_data())
+
+            if self.object:
+                data = self.get_data_json(self.object)
+
+            return ResponseClass(self._get_content(context), data=data)
+
+        else:
+            return ResponseClass(self.redirect_to)
+
+
 
 
 class ModalUtilMixin(object):

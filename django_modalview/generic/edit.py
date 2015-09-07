@@ -1,18 +1,36 @@
-from django.views.generic.edit import (FormMixin, ProcessFormView,
-                                       ModelFormMixin, DeletionMixin)
+import json
 
-from django_modalview.generic.base import (ModalContextMixin, ModalView,
-                                           ModalTemplateMixin, ModalUtilMixin)
-from django_modalview.generic.component import (FORM_TEMPLATE_CONTENT,
-                                                LAST_FORM_TEMPLATE,
-                                                FORM_TEMPLATE, ModalButton)
+from django.forms.widgets import Select
+
+from django.views.generic.edit import (
+    FormMixin,
+    ProcessFormView,
+    ModelFormMixin,
+    DeletionMixin
+)
+
+from django_modalview.generic.base import (
+    ModalView,
+    ModalUtilMixin,
+    ModalContextMixin,
+    ModalTemplateMixin,
+    ModalTemplateReferenceMixin
+)
+
+from django_modalview.generic.component import (
+    FORM_TEMPLATE_CONTENT,
+    LAST_FORM_TEMPLATE,
+    FORM_TEMPLATE,
+    ModalButton
+)
+
 
 
 class ModalEditContextMixin(ModalContextMixin):
 
     """
-            Mixin that extends the ModalContextMixin to add some new elements in
-            the modal context.
+        Mixin that extends the ModalContextMixin to add some new elements in
+        the modal context.
 
     """
 
@@ -24,26 +42,29 @@ class ModalEditContextMixin(ModalContextMixin):
         self.form_content_template_name = LAST_FORM_TEMPLATE
 
     def get_context_modal_data(self, **kwargs):
+        
         kwargs.update({
             'submit_button': self.submit_button,
             'action': self.action,
             'form_template_name': self.form_content_template_name
         })
-        return super(ModalEditContextMixin,
-                     self).get_context_modal_data(**kwargs)
+
+        return super(
+            ModalEditContextMixin,
+            self
+        ).get_context_modal_data(**kwargs)
+
 
 
 class ModalFormMixin(ModalEditContextMixin, FormMixin):
 
     """
-            Mixin that provide a way to show and to handle a modal with a django
-            form.
+        Mixin that provide a way to show and to handle a modal with a django
+        form.
     """
 
     def get_context_modal_data(self, **kwargs):
-        kwargs.update({
-            'form': self.get_form(self.get_form_class()),
-        })
+        kwargs.update({'form': self.get_form(self.get_form_class())})
         return super(ModalFormMixin, self).get_context_modal_data(**kwargs)
 
     def _form_response(self, **kwargs):
@@ -56,6 +77,7 @@ class ModalFormMixin(ModalEditContextMixin, FormMixin):
 
     def form_invalid(self, form, **kwargs):
         return self._form_response(**kwargs)
+
 
 
 class ModalFormUtilMixin(ModalFormMixin, ModalUtilMixin):
@@ -86,11 +108,12 @@ class ModalFormUtilMixin(ModalFormMixin, ModalUtilMixin):
         return super(ModalFormUtilMixin, self).form_invalid(form, **kwargs)
 
 
+
 class ModalModelFormMixin(ModalFormMixin, ModelFormMixin):
 
     """
-            A mixin that provide a way to show and to handle a modelform in a
-            modal
+        A mixin that provide a way to show and to handle a modelform in a
+        modal
     """
 
     def save(self, form):
@@ -102,43 +125,52 @@ class ModalModelFormMixin(ModalFormMixin, ModelFormMixin):
         return super(ModalModelFormMixin, self).form_valid(form, **kwargs)
 
 
+
 class BaseProcessModalView(ModalView, ProcessFormView):
 
     """
-            A base mixin to handle a get request on a modal view that contains
-            a form.
+        A base mixin to handle a get request on a modal view that contains
+        a form.
     """
 
     def dispatch(self, request, *args, **kwargs):
         self.action = request.path
-        return super(BaseProcessModalView, self).dispatch(request, *args,
-                                                          **kwargs)
+        return super(BaseProcessModalView, self).dispatch(
+            request,
+            *args,
+            **kwargs
+        )
 
     def get(self, request, *args, **kwargs):
         self.template_name = FORM_TEMPLATE
         return super(BaseProcessModalView, self).get(request, *args, **kwargs)
 
 
+
 class ProcessModalFormView(BaseProcessModalView):
 
     """
-            A mixin that provide a way to handle a modal view with a form on a
-            GET request and to run it on a POST request.
+        A mixin that provide a way to handle a modal view with a form on a
+        GET request and to run it on a POST request.
     """
 
     def post(self, request, *args, **kwargs):
         self.template_name = self.content_template_name
-        return super(ProcessModalFormView, self).post(request, *args,
-                                                      **kwargs)
+        return super(ProcessModalFormView, self).post(
+            request,
+            *args,
+            **kwargs
+        )
+
 
 
 class ProcessModalPostView(BaseProcessModalView):
 
     """
-            A mixin that provide a way to handle a modal view with a form on a
-            GET request. The post request don't check if the form is valid. Usefull
-            for the deletion Mixin or other modal that want to run an util on a
-            POST request without analize the form
+        A mixin that provide a way to handle a modal view with a form on a
+        GET request. The post request don't check if the form is valid. Usefull
+        for the deletion Mixin or other modal that want to run an util on a
+        POST request without analize the form
     """
 
     def post(self, request, *args, **kwargs):
@@ -148,20 +180,23 @@ class ProcessModalPostView(BaseProcessModalView):
         return self.render_to_response(context=kwargs)
 
 
+
 class ModalDeletionMixin(ModalEditContextMixin):
 
     """
-            A mixin that provide a way to delete an object.
+        A mixin that provide a way to delete an object.
     """
 
     def delete(self, request, *args, **kwargs):
         self.object.delete()
 
 
+
 class ModalPostMixin(ModalEditContextMixin):
     '''
         A mixin that provide a way to handle a post request
     '''
+
 
 
 class ModalPostUtilMixin(ModalPostMixin, ModalUtilMixin):
@@ -172,8 +207,11 @@ class ModalPostUtilMixin(ModalPostMixin, ModalUtilMixin):
     def dispatch(self, request, *args, **kwargs):
         self.kwargs.update(kwargs)
         self.kwargs.update(request.GET)
-        return super(ModalPostUtilMixin, self).dispatch(request, *args,
-                                                        **kwargs)
+        return super(ModalPostUtilMixin, self).dispatch(
+            request,
+            *args,
+            **kwargs
+        )
 
     def post(self, request, *args, **kwargs):
         self.kwargs.update(kwargs)
@@ -181,21 +219,23 @@ class ModalPostUtilMixin(ModalPostMixin, ModalUtilMixin):
         return super(ModalPostUtilMixin, self).post(request, **kwargs)
 
 
+
 class BaseModalUpdateView(ModalModelFormMixin, ProcessModalFormView):
 
     """
-            A base view that provide a way to display a modelform, in a modal,
-            to update an object. The attribute that contains the instance is
-            self.object.
+        A base view that provide a way to display a modelform, in a modal,
+        to update an object. The attribute that contains the instance is
+        self.object.
     """
+
 
 
 class BaseModalCreateView(BaseModalUpdateView):
 
     """
-            A base view that provide a way to display a modelform, in a modal,
-            to update an object. The attribute that contains the instance is
-            self.object.
+        A base view that provide a way to display a modelform, in a modal,
+        to update an object. The attribute that contains the instance is
+        self.object.
     """
 
     def get(self, request, *args, **kwargs):
@@ -207,11 +247,12 @@ class BaseModalCreateView(BaseModalUpdateView):
         return super(BaseModalCreateView, self).post(request, *args, **kwargs)
 
 
+
 class BaseModalDeleteView(ModalDeletionMixin, ProcessModalPostView):
 
     """
-            A base view that provide a way to delete an object in a modal.
-            The object that sould be deleted is in the attribute self.object
+        A base view that provide a way to delete an object in a modal.
+        The object that sould be deleted is in the attribute self.object
     """
 
     def __init__(self, *args, **kwargs):
@@ -224,25 +265,26 @@ class BaseModalDeleteView(ModalDeletionMixin, ProcessModalPostView):
         return super(BaseModalDeleteView, self).post(request, *args, **kwargs)
 
 
+
 class BaseModalPostView(ModalPostMixin, ProcessModalPostView):
 
     """
-            A base view that provide a way to handle a modal that can send a post
-            request and handle its response.
+        A base view that provide a way to handle a modal that can send a post
+        request and handle its response.
     """
 
 
 class BaseModalPostUtilView(ModalPostUtilMixin, ProcessModalPostView):
     """
-            A base view that provide a way to handle a modal that can send a post
-            request, run an util and handle its response.
+        A base view that provide a way to handle a modal that can send a post
+        request, run an util and handle its response.
     """
 
 
 class BaseModalFormView(ModalFormMixin, ProcessModalFormView):
 
     """
-            A base view that provide a way to handle a modal with a form.
+        A base view that provide a way to handle a modal with a form.
     """
 
 
@@ -256,7 +298,15 @@ class BaseModalFormUtilView(ModalFormUtilMixin, ProcessModalFormView):
 class ModalFormView(ModalTemplateMixin, BaseModalFormView):
 
     """
-            A view to handle a modal with form and to render it.
+        A view to handle a modal with form and to render it.
+    """
+
+
+
+class ModalFormReferenceView(ModalTemplateReferenceMixin, BaseModalFormView):
+
+    """
+        A view to handle a modal with form for reference to render it
     """
 
 
@@ -270,21 +320,67 @@ class ModalFormUtilView(ModalTemplateMixin, BaseModalFormUtilView):
 class ModalCreateView(ModalTemplateMixin, BaseModalCreateView):
 
     """
-            A view to handle a modal with a create form and to render it.
+        A view to handle a modal with a create form and to render it.
     """
+
+
+class ModalCreateReferenceView(ModalTemplateReferenceMixin, BaseModalCreateView):
+
+    """
+        A view to handle a modal with a create reference form and to render it.
+        by: debianitram (at) gmail.com
+    """
+
+    T_WIDGET = ('autocomplete', 'options')
+
+    def __init__(self, f_reference, t_widget='options', *args, **kwargs):
+        super(ModalCreateReferenceView, self).__init__(*args, **kwargs)
+
+        self.f_reference = f_reference
+        self.t_widget = t_widget
+        self.name_value = kwargs.get('name_value')  # ('id', 'value')
+
+
+    def get_choices(self, qs=False):
+        name = self.name_value[0]
+        value = self.name_value[1]
+        qset = self.get_queryset() if qs else self.f_reference.get_queryset()
+        return [(getattr(o, name), getattr(o, value)) for o in qset]
+
+    def render_options(self, object_selected):
+        s = Select()
+        if self.t_widget == 'autocomplete':
+            choices = [(
+                getattr(object_selected, self.name_value[0]),
+                getattr(object_selected, self.name_value[1])
+            )]
+            return s.render_options(choices, (object_selected.id, ))
+
+        return s.render_options(self.get_choices(), (object_selected.id, ))
+
+    def get_target(self):
+            return 'id_{0}'.format(self.f_reference.field.name)        
+
+    def get_data_json(self, object_):
+        data = {
+            'modal_id': self.modal_id,
+            'options': self.render_options(object_),
+            'target': self.get_target()
+        }
+        return json.dumps(data)
 
 
 class ModalUpdateView(ModalTemplateMixin, BaseModalUpdateView):
 
     """
-            A view to handle a modal with an update form and to render it.
+        A view to handle a modal with an update form and to render it.
     """
 
 
 class ModalPostView(ModalTemplateMixin, BaseModalPostView):
 
     """
-            A view to handle a modal with a post request sender and to render it.
+        A view to handle a modal with a post request sender and to render it.
     """
 
 
@@ -296,5 +392,5 @@ class ModalPostUtilView(ModalTemplateMixin, BaseModalPostUtilView):
 class ModalDeleteView(ModalTemplateMixin, BaseModalDeleteView):
 
     """
-            A view to handle a modal with delete button and to render it.
+        A view to handle a modal with delete button and to render it.
     """
