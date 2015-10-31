@@ -1,6 +1,7 @@
 import json
 
 from django.forms.widgets import Select
+from django.db.models import QuerySet
 
 from django.views.generic.edit import (
     FormMixin,
@@ -344,8 +345,8 @@ class ModalCreateReferenceView(ModalTemplateReferenceMixin, BaseModalCreateView)
     def get_choices(self, qs=False):
         name = self.name_value[0]
         value = self.name_value[1]
-        qset = self.get_queryset() if qs else self.f_reference.get_queryset()
-        return [(getattr(o, name), getattr(o, value)) for o in qset]
+        queryset = self.get_queryset()
+        return [(getattr(o, name), getattr(o, value)) for o in queryset]
 
     def render_options(self, object_selected):
         s = Select()
@@ -368,6 +369,18 @@ class ModalCreateReferenceView(ModalTemplateReferenceMixin, BaseModalCreateView)
             'target': self.get_target()
         }
         return json.dumps(data)
+
+    def get_queryset(self):
+        
+        if self.queryset is not None:
+            queryset = self.queryset
+            if isinstance(queryset, QuerySet):
+                queryset = queryset.all()
+
+        else:
+            queryset = self.f_reference.get_queryset()
+        
+        return queryset
 
 
 class ModalUpdateView(ModalTemplateMixin, BaseModalUpdateView):
