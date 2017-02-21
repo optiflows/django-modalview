@@ -20,7 +20,12 @@
 	}
 
 	DjangoModalHandlerResponse.prototype.handleRedirectResponse = function(response){
-		window.location = response.redirect_to;
+		if (window.location != response.redirect_to) {
+			window.location = response.redirect_to;
+		}
+		else {
+			window.location.reload();
+		}
 	}
 
 	DjangoModalHandlerResponse.prototype.handleErrorResponse = function(jqXHR, textStatus, errorThrown){
@@ -272,7 +277,13 @@
 	}
 
 	DjangoModalRunner.prototype.handleRedirectResponse = function(response){
-		window.location = response.url;
+		if (window.location != response.url) {
+			window.location = response.url;
+		}
+		else {
+			window.location.reload();
+		}
+		
 	}
 
 	DjangoModalRunner.prototype.handleNormalResponse = function(response){
