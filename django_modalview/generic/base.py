@@ -17,7 +17,7 @@ class ModalContextMixin(object):
             received by get_context_modal_data as the modal template context.
     """
     title = "title"
-    close_button = ModalButton('Close', button_type='primary')
+    close_button = ModalButton('Close', button_type='default')
     content_template_name = None
     base_template_name = BASE_TEMPLATE
     description = ""
