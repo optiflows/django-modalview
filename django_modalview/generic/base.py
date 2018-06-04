@@ -164,11 +164,8 @@ class BaseModalView(ModalContextMixin, ModalView):
     """
             A base view to handle a simple modal
     """
-
-    def __init__(self, *args, **kwargs):
-        super(BaseModalView, self).__init__(*args, **kwargs)
-        self.template_name = GET_TEMPLATE
-        self.content_template_name = GET_TEMPLATE_CONTENT
+    template_name = GET_TEMPLATE
+    content_template_name = GET_TEMPLATE_CONTENT
 
 
 class ModalTemplateView(ModalTemplateMixin, BaseModalView):
