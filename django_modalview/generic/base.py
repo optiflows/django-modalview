@@ -64,12 +64,9 @@ class ModalView(View):
             to override the dispatch method and to overload the get method.
     """
     redirect_to = None
+    is_ajax = False
+    _can_redirect = False
     
-    def __init__(self, *args, **kwargs):
-        super(ModalView, self).__init__(*args, **kwargs)
-        self.is_ajax = False
-        self._can_redirect = False
-
     def can_redirect(self):
         return self._can_redirect and self.get_redirect_url()
 
@@ -159,20 +156,13 @@ class ModalUtilMixin(object):
         self.util_kwargs.update(**kwargs)
 
 
-class BaseModalView(ModalContextMixin, ModalView):
-
-    """
-            A base view to handle a simple modal
-    """
-    template_name = GET_TEMPLATE
-    content_template_name = GET_TEMPLATE_CONTENT
-
-
-class ModalTemplateView(ModalTemplateMixin, BaseModalView):
+class ModalTemplateView(ModalTemplateMixin, ModalContextMixin, ModalView):
 
     """
             A view that display a simple modal
     """
+    template_name = GET_TEMPLATE
+    content_template_name = GET_TEMPLATE_CONTENT
 
 
 class ModalTemplateUtilView(ModalUtilMixin, ModalTemplateView):
