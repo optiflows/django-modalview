@@ -35,15 +35,15 @@
 </div>
 <div class="modal-footer">
 	{% block modal-button %}
+		{% if button_close.display  %}
+				<button class="btn btn-{{button_close.type}}" data-dismiss="modal" aria-hidden="true">{% trans button_close.value %}</button>
+		{% endif %}
 		{% if util_button.display %}
 			<a href='{{util_button.url}}'class="util_runner btn btn-{{util_button.type}}"data-loading-text="Loading..."
 			>{% trans util_button.value %}</a>
 		{% endif %}
 		{% if submit_button.display %}
 			<input value='{{submit_button.value}}' type='submit' id='modal-submit' class='btn btn-{{submit_button.type}}' data-loading-text="{{submit_button.loading_value}}" />
-		{% endif %}
-		{% if button_close.display  %}
-				<button class="btn btn-{{button_close.type}}" data-dismiss="modal" aria-hidden="true">{% trans button_close.value %}</button>
 		{% endif %}
 	{% endblock %}
 </div>
