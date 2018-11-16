@@ -9,9 +9,12 @@ class BaseModalJsonResponse(HttpResponse):
 
     def __init__(self, *args, **kwargs):
         jsn_content = json.dumps(self.get_content())
-        super(BaseModalJsonResponse, self).__init__(jsn_content,
-                                                    self.content_type,
-                                                    *args, **kwargs)
+        super(BaseModalJsonResponse, self).__init__(
+            jsn_content,
+            self.content_type,
+            *args, 
+            **kwargs
+        )
 
     def get_content(self):
         raise ImproperlyConfigured("No method get_content")
@@ -44,3 +47,26 @@ class ModalJsonResponseRedirect(BaseModalJsonResponse):
             'type': self.type,
             'redirect_to': self.redirect_to
         }
+
+
+#### Add Modal for Reference Modal Create
+class ModalJsonResponseReference(BaseModalJsonResponse):
+
+    type = 'normal'
+
+    def __init__(self, content, *args, **kwargs):
+        self.modal_content = content
+        self.data = kwargs.pop('data')
+
+        super(ModalJsonResponseReference, self).__init__(*args, **kwargs)
+
+    def get_content(self):
+        result =  {
+            'type': self.type,
+            'content': self.modal_content
+        }
+
+        if self.data:
+            result.update(data=self.data)
+
+        return result

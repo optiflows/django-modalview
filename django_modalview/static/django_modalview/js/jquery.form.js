@@ -1274,4 +1274,18 @@ function log() {
     }
 }
 
+
 }));
+
+function ModalCreateReference(event){
+    // By debianitram (at) gmail (dot) com
+    if (event.data){
+        // Generat Object
+        data = JSON.parse(event.data);
+        // Update Widget to field reference
+        $('#' + data.target).html(data.options);
+        
+        // Hide modal
+        $('#' + data.modal_id).modal('hide');
+    }
+}

@@ -204,7 +204,8 @@
 
 	DjangoModal.prototype.buildElement = function(modal){
 		$('body').prepend(modal);
-		return $('#generic-modal');
+		element_modal = $('body').children()[0];  // get Element Modal.
+		return $('#' + element_modal.id);
 	}
 
 	DjangoModal.prototype.hasUtilRunner = function(){
