@@ -16,7 +16,12 @@ class ModalContextMixin(object):
             A default modal context mixin that passes the keyword arguments
             received by get_context_modal_data as the modal template context.
     """
-
+    title = "title"
+    close_button = ModalButton('Close', button_type='default')
+    content_template_name = None
+    base_template_name = BASE_TEMPLATE
+    description = ""
+    
     def get_context_data(self, **kwargs):
         if 'view' not in kwargs:
             kwargs['view'] = self
@@ -25,19 +30,18 @@ class ModalContextMixin(object):
     def __init__(self, title=None, description=None, icon=None, *args,
                  **kwargs):
         super(ModalContextMixin, self).__init__(*args, **kwargs)
-        self.title = "title"
         self.response = None
         self.icon = icon
-        self.description = ""
-        self.close_button = ModalButton('Close', button_type='primary')
-        self.content_template_name = None
-        self.base_template_name = BASE_TEMPLATE
+        if title:
+            self.title = title        
+        if description:
+            self.description = description        
         # use to know if you can redirect. Disable for the first request.
 
     def _generate_modal_context(self):
         return {
             'title': self.title,
-            'description': self.description,
+            'description': self.get_description(),
             'button_close': self.close_button,
             'content_template_name': self.content_template_name,
             'base_template_name': self.base_template_name,
@@ -49,6 +53,9 @@ class ModalContextMixin(object):
         kwargs.update(self._generate_modal_context())
         return kwargs
 
+    def get_description(self):
+        return self.description
+        
 
 class ModalView(View):
 
@@ -56,15 +63,12 @@ class ModalView(View):
             Parent class of all the ModalView. Extends the Django generic View
             to override the dispatch method and to overload the get method.
     """
-
-    def __init__(self, *args, **kwargs):
-        super(ModalView, self).__init__(*args, **kwargs)
-        self.is_ajax = False
-        self._can_redirect = False
-        self.redirect_to = None
-
+    redirect_to = None
+    is_ajax = False
+    _can_redirect = False
+    
     def can_redirect(self):
-        return self._can_redirect and self.redirect_to
+        return self._can_redirect and self.get_redirect_url()
 
     def dispatch(self, request, *args, **kwargs):
         self.is_ajax = request.is_ajax()
@@ -75,6 +79,9 @@ class ModalView(View):
         return self.render_to_response(
             context=context
         )
+        
+    def get_redirect_url(self):
+        return self.redirect_to     
 
 
 class ModalTemplateMixin(TemplateResponseMixin):
@@ -104,26 +111,26 @@ class ModalTemplateMixin(TemplateResponseMixin):
         })
         return render_to_string(self.get_template_names(), context)
 
-    def get_response(self):
-
+    def get_response(self, can_redirect=False):
         if self.is_ajax:
-            if not self.can_redirect():
+            if not can_redirect:
                 return self.json_response_class
             else:
                 return self.json_response_redirect_class
         else:
-            if not self.can_redirect():
+            if not can_redirect:
                 return self.http_response_class
             else:
                 return self.http_response_redirect_class
 
     def render_to_response(self, context):
-        ResponseClass = self.get_response()
-        if not self.can_redirect():
+        redirect_url = self.can_redirect()
+        ResponseClass = self.get_response(can_redirect=redirect_url)
+        if not redirect_url:
             context.update(self.get_context_data())
             return ResponseClass(self._get_content(context))
         else:
-            return ResponseClass(self.redirect_to)
+            return ResponseClass(redirect_url)
 
 
 class ModalUtilMixin(object):
@@ -149,23 +156,13 @@ class ModalUtilMixin(object):
         self.util_kwargs.update(**kwargs)
 
 
-class BaseModalView(ModalContextMixin, ModalView):
-
-    """
-            A base view to handle a simple modal
-    """
-
-    def __init__(self, *args, **kwargs):
-        super(BaseModalView, self).__init__(*args, **kwargs)
-        self.template_name = GET_TEMPLATE
-        self.content_template_name = GET_TEMPLATE_CONTENT
-
-
-class ModalTemplateView(ModalTemplateMixin, BaseModalView):
+class ModalTemplateView(ModalTemplateMixin, ModalContextMixin, ModalView):
 
     """
             A view that display a simple modal
     """
+    template_name = GET_TEMPLATE
+    content_template_name = GET_TEMPLATE_CONTENT
 
 
 class ModalTemplateUtilView(ModalUtilMixin, ModalTemplateView):
